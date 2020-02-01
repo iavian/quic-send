@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/iavian/quic-file/common"
+	"github.com/iavian/quic-send/common"
 	"github.com/lucas-clemente/quic-go"
 )
 
