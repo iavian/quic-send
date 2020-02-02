@@ -33,7 +33,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	res, err := hclient.Post("https://127.0.0.1:4242/upload", "binary/octet-stream", file)
+	res, err := hclient.Post("https://quic.iavian.net:8080/upload", "binary/octet-stream", file)
 	if err != nil {
 		panic(err)
 	}

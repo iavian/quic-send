@@ -32,7 +32,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/upload", uploadFile)
-	http3.ListenAndServeQUIC(":4242", "/Users/iavian/Desktop/quic-send/certs/quic.cert", "/Users/iavian/Desktop/quic-send/certs/quic.key", nil)
+	http3.ListenAndServeQUIC(":8080", "/Users/iavian/Desktop/quic-send/certs/quic.cert", "/Users/iavian/Desktop/quic-send/certs/quic.key", nil)
 }
 
 func mainy() {
