@@ -1,14 +1,47 @@
 package main
 
 import (
+	"crypto/tls"
+	"crypto/x509"
+	"fmt"
 	"log"
+	"net/http"
+	"os"
 	"sync"
 
 	"github.com/iavian/quic-send/client"
 	"github.com/iavian/quic-send/common"
+	"github.com/lucas-clemente/quic-go/http3"
 )
 
 func main() {
+	pool, err := x509.SystemCertPool()
+	if err != nil {
+		log.Fatal(err)
+	}
+	roundTripper := &http3.RoundTripper{
+		TLSClientConfig: &tls.Config{
+			RootCAs:            pool,
+			InsecureSkipVerify: true,
+		},
+	}
+	defer roundTripper.Close()
+	hclient := &http.Client{
+		Transport: roundTripper,
+	}
+	file, err := os.Open("tfile")
+	if err != nil {
+		panic(err)
+	}
+	res, err := hclient.Post("https://127.0.0.1:4242/upload", "binary/octet-stream", file)
+	if err != nil {
+		panic(err)
+	}
+	defer res.Body.Close()
+	fmt.Println("All done")
+}
+
+func mainy() {
 	c := client.NewFileClient(common.ClientServerAddr)
 	var wg sync.WaitGroup
 	files := [1]string{"tfile"}
