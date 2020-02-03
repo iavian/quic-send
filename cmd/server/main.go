@@ -30,12 +30,12 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Nice")
 }
 
-func main() {
+func mainy() {
 	http.HandleFunc("/upload", uploadFile)
 	http3.ListenAndServeQUIC(":8080", "./certs/quic.cert", "./certs/quic.key", nil)
 }
 
-func mainy() {
+func main() {
 	s := server.NewFileServer(common.ServerAddr, generateTLSConfig(), nil)
 	s.Run()
 }
