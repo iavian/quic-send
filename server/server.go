@@ -53,5 +53,5 @@ func writeFile(file string) (*bufio.Writer, error) {
 	if err != nil {
 		return nil, err
 	}
-	return bufio.NewWriter(fp), nil
+	return bufio.NewWriterSize(fp, 1000), nil
 }

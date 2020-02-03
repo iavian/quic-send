@@ -50,7 +50,7 @@ func (c *FileClient) Upload(file string) error {
 	}
 	defer stream.Close()
 
-	writer := bufio.NewWriter(stream)
+	writer := bufio.NewWriterSize(stream, 10000)
 	err = writer.WriteByte(byte(1))
 	if err != nil {
 		return fmt.Errorf("write op error: %v", err)
