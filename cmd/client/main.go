@@ -14,7 +14,7 @@ import (
 	"github.com/lucas-clemente/quic-go/http3"
 )
 
-func main() {
+func mainy() {
 	pool, err := x509.SystemCertPool()
 	if err != nil {
 		log.Fatal(err)
@@ -41,7 +41,7 @@ func main() {
 	fmt.Println("All done")
 }
 
-func mainy() {
+func main() {
 	c := client.NewFileClient(common.ClientServerAddr)
 	var wg sync.WaitGroup
 	files := [1]string{"tfile"}
