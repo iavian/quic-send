@@ -39,7 +39,7 @@ func NewFileClient(address string) *FileClient {
 
 func (c *FileClient) Close() {
 	time.Sleep(time.Second)
-	c.Session.Close()
+	c.Session.CloseWithError(0, "")
 	time.Sleep(time.Second)
 }
 
