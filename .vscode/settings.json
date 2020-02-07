@@ -1,0 +1,9 @@
+{
+    "files.autoSave": "afterDelay",
+    "editor.minimap.enabled": false,
+    "editor.wordWrap": "on",
+    "editor.fontFamily": "JetBrainsMono-Regular, Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontSize": 13,
+    "editor.tabSize": 2,
+    
+}
