@@ -44,7 +44,7 @@ func mainy() {
 func main() {
 	start := time.Now()
 	c := client.NewFileClient(common.ClientServerAddr)
-	file := "tfile"
+	file := "afile"
 	err := c.Upload(file)
 	elapsed := time.Since(start)
 	if err != nil {

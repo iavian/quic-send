@@ -27,7 +27,8 @@ func NewFileClient(address string) *FileClient {
 		InsecureSkipVerify: true,
 		NextProtos:         []string{"quic-file"},
 	}
-	session, err := quic.DialAddr(address, tlsConf, nil)
+	quicConfig := &quic.Config{KeepAlive: false}
+	session, err := quic.DialAddr(address, tlsConf, quicConfig)
 	if err != nil {
 		log.Fatalf("connect server error: %v\n", err)
 	}
@@ -51,6 +52,7 @@ func (c *FileClient) Upload(file string) error {
 	defer stream.Close()
 
 	writer := bufio.NewWriterSize(stream, 10000)
+	//writer := bufio.NewWriter(stream)
 	err = writer.WriteByte(byte(1))
 	if err != nil {
 		return fmt.Errorf("write op error: %v", err)

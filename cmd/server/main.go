@@ -14,6 +14,7 @@ import (
 
 	"github.com/iavian/quic-send/common"
 	"github.com/iavian/quic-send/server"
+	"github.com/lucas-clemente/quic-go"
 	"github.com/lucas-clemente/quic-go/http3"
 )
 
@@ -36,7 +37,10 @@ func mainy() {
 }
 
 func main() {
-	s := server.NewFileServer(common.ServerAddr, generateTLSConfig(), nil)
+	quicConfig := &quic.Config{
+		MaxIncomingStreams: -1,
+	}
+	s := server.NewFileServer(common.ServerAddr, generateTLSConfig(), quicConfig)
 	s.Run()
 }
 
