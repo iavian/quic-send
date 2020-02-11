@@ -37,9 +37,7 @@ func mainy() {
 }
 
 func main() {
-	quicConfig := &quic.Config{
-		MaxIncomingStreams: -1,
-	}
+	quicConfig := &quic.Config{}
 	s := server.NewFileServer(common.ServerAddr, generateTLSConfig(), quicConfig)
 	s.Run()
 }
