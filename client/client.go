@@ -40,7 +40,7 @@ func NewFileClient(address string) *FileClient {
 
 func (c *FileClient) Close() {
 	time.Sleep(time.Second)
-	c.Session.CloseWithError(0, "")
+	c.Session.CloseWithError(quic.ErrorCode(0), "")
 	time.Sleep(time.Second)
 }
 
