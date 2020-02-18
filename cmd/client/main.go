@@ -14,7 +14,7 @@ import (
 	"github.com/lucas-clemente/quic-go/http3"
 )
 
-func mainy() {
+func main() {
 	pool, err := x509.SystemCertPool()
 	if err != nil {
 		log.Fatal(err)
@@ -23,7 +23,7 @@ func mainy() {
 		TLSClientConfig: &tls.Config{
 			RootCAs:            pool,
 			InsecureSkipVerify: true,
-		},
+		}, DisableCompression: false,
 	}
 	defer roundTripper.Close()
 	hclient := &http.Client{
@@ -33,7 +33,7 @@ func mainy() {
 	if err != nil {
 		panic(err)
 	}
-	res, err := hclient.Post("https://quic.iavian.net:8080/upload", "binary/octet-stream", file)
+	res, err := hclient.Post("https://localhost:8080/upload", "binary/octet-stream", file)
 	if err != nil {
 		panic(err)
 	}
@@ -41,7 +41,7 @@ func mainy() {
 	fmt.Println("All done")
 }
 
-func main() {
+func mainj() {
 	start := time.Now()
 	c := client.NewFileClient(common.ClientServerAddr)
 	file := "afile"
