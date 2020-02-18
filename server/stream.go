@@ -6,11 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 
-	"github.com/iavian/quic-send/common"
 	"github.com/lucas-clemente/quic-go"
 )
 
@@ -81,8 +81,10 @@ func (h *StreamHandler) handlerUpload() error {
 	if readn != int(pathLen) {
 		return errors.New("readn != path len")
 	}
+	tmpAbsPath, err := ioutil.TempFile(".", "*")
+	defer tmpAbsPath.Close()
 
-	tmpAbsPath, err := filepath.Abs(string(path) + common.TempFileSuffix)
+	//tmpAbsPath, err := filepath.Abs(string(path) + common.TempFileSuffix)
 	if err != nil {
 		return fmt.Errorf("get tmp abs path error: %v", err)
 	}
@@ -99,20 +101,19 @@ func (h *StreamHandler) handlerUpload() error {
 		return errors.New("readn != 8")
 	}
 	dataLen := binary.BigEndian.Uint64(dataLenBytes)
-	file, err := os.Create(tmpAbsPath)
+
 	if err != nil {
 		return fmt.Errorf("creat file error: %v", err)
 	}
-	writen, err := io.Copy(file, h.Reader)
+	writen, err := io.Copy(tmpAbsPath, h.Reader)
 	if err != nil {
 		return fmt.Errorf("write file error: %v", err)
 	}
 	if dataLen != uint64(writen) {
 		return errors.New("data len != writen")
 	}
-	file.Close()
 
-	err = os.Rename(tmpAbsPath, absPath)
+	err = os.Rename(tmpAbsPath.Name(), absPath)
 	if err != nil {
 		return fmt.Errorf("rename file error: %v", err)
 	}

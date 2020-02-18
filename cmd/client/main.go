@@ -14,7 +14,7 @@ import (
 	"github.com/lucas-clemente/quic-go/http3"
 )
 
-func mainl() {
+func mainy() {
 	pool, err := x509.SystemCertPool()
 	if err != nil {
 		log.Fatal(err)
