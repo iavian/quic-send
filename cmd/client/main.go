@@ -14,7 +14,7 @@ import (
 	"github.com/lucas-clemente/quic-go/http3"
 )
 
-func main() {
+func mainl() {
 	pool, err := x509.SystemCertPool()
 	if err != nil {
 		log.Fatal(err)
@@ -29,22 +29,26 @@ func main() {
 	hclient := &http.Client{
 		Transport: roundTripper,
 	}
+	start := time.Now()
 	file, err := os.Open("tfile")
 	if err != nil {
 		panic(err)
 	}
 	res, err := hclient.Post("https://quic.iavian.net:8080/upload", "binary/octet-stream", file)
+	elapsed := time.Since(start)
 	if err != nil {
 		panic(err)
+	} else {
+		log.Printf("upload/download file success: %s %s\n", file.Name(), elapsed)
 	}
 	defer res.Body.Close()
 	fmt.Println("All done")
 }
 
-func mainj() {
+func main() {
 	start := time.Now()
 	c := client.NewFileClient(common.ClientServerAddr)
-	file := "afile"
+	file := "tfile"
 	err := c.Upload(file)
 	elapsed := time.Since(start)
 	if err != nil {
