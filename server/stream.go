@@ -107,7 +107,7 @@ func (h *StreamHandler) handlerUpload() error {
 		return fmt.Errorf("creat file error: %v", err)
 	}
 
-	writen, err := io.Copy(tmpAbsPath, io.TeeReader(h.Reader, &WriteCounter{ExpectedSize: dataLen}))
+	writen, err := io.Copy(tmpAbsPath, h.Reader)
 	if err != nil {
 		return fmt.Errorf("write file error: %v", err)
 	}
