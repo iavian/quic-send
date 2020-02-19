@@ -107,7 +107,7 @@ func (h *StreamHandler) handlerUpload() error {
 		return fmt.Errorf("creat file error: %v", err)
 	}
 
-	writen, err := io.Copy(tmpAbsPath, io.TeeReader(h.Reader, &WriteCounter{}))
+	writen, err := io.Copy(tmpAbsPath, io.TeeReader(h.Reader, &WriteCounter{ExpectedSize: dataLen}))
 	if err != nil {
 		return fmt.Errorf("write file error: %v", err)
 	}
@@ -123,14 +123,15 @@ func (h *StreamHandler) handlerUpload() error {
 }
 
 type WriteCounter struct {
-	Total uint64
+	Total        uint64
+	ExpectedSize uint64
 }
 
 func (wc *WriteCounter) Write(p []byte) (int, error) {
 	n := len(p)
 	wc.Total += uint64(n)
 	fmt.Printf("\r%s", strings.Repeat(" ", 35))
-	fmt.Printf("\rDownloading... %d complete", wc.Total)
+	fmt.Printf("\rDownloading... %d of %d complete", wc.Total, wc.ExpectedSize)
 	return n, nil
 }
 
