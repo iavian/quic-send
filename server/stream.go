@@ -107,6 +107,7 @@ func (h *StreamHandler) handlerUpload() error {
 	if err != nil {
 		return fmt.Errorf("creat file error: %v", err)
 	}
+
 	bar := pb.Full.Start64(int64(dataLen))
 	barReader := bar.NewProxyReader(h.reader)
 	writen, err := io.Copy(tmpAbsPath, barReader)
