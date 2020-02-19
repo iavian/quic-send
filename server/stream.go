@@ -109,7 +109,7 @@ func (h *StreamHandler) handlerUpload() error {
 	}
 
 	bar := pb.Full.Start64(int64(dataLen))
-	barReader := bar.NewProxyReader(h.reader)
+	barReader := bar.NewProxyReader(h.Stream)
 	writen, err := io.Copy(tmpAbsPath, barReader)
 	if err != nil {
 		return fmt.Errorf("write file error: %v", err)
