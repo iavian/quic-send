@@ -12,7 +12,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/cheggaaa/pb/v3"
 	"github.com/lucas-clemente/quic-go"
 )
 
@@ -86,7 +85,6 @@ func (h *StreamHandler) handlerUpload() error {
 	tmpAbsPath, err := ioutil.TempFile(".", "*")
 	defer tmpAbsPath.Close()
 
-	//tmpAbsPath, err := filepath.Abs(string(path) + common.TempFileSuffix)
 	if err != nil {
 		return fmt.Errorf("get tmp abs path error: %v", err)
 	}
@@ -108,10 +106,8 @@ func (h *StreamHandler) handlerUpload() error {
 		return fmt.Errorf("creat file error: %v", err)
 	}
 
-	bar := pb.Full.Start64(int64(dataLen))
-	barReader := bar.NewProxyReader(h.Stream)
-	writen, err := io.Copy(tmpAbsPath, barReader)
-	bar.Finish()
+	writen, err := io.Copy(tmpAbsPath, h.Stream)
+
 	if err != nil {
 		return fmt.Errorf("write file error: %v", err)
 	}
