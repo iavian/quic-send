@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/lucas-clemente/quic-go"
 )
@@ -105,7 +106,8 @@ func (h *StreamHandler) handlerUpload() error {
 	if err != nil {
 		return fmt.Errorf("creat file error: %v", err)
 	}
-	writen, err := io.Copy(tmpAbsPath, h.Reader)
+
+	writen, err := io.Copy(tmpAbsPath, io.TeeReader(h.Reader, &WriteCounter{}))
 	if err != nil {
 		return fmt.Errorf("write file error: %v", err)
 	}
@@ -118,6 +120,18 @@ func (h *StreamHandler) handlerUpload() error {
 		return fmt.Errorf("rename file error: %v", err)
 	}
 	return nil
+}
+
+type WriteCounter struct {
+	Total uint64
+}
+
+func (wc *WriteCounter) Write(p []byte) (int, error) {
+	n := len(p)
+	wc.Total += uint64(n)
+	fmt.Printf("\r%s", strings.Repeat(" ", 35))
+	fmt.Printf("\rDownloading... %d complete", wc.Total)
+	return n, nil
 }
 
 func (h *StreamHandler) handlerDownload() error {
