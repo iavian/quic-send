@@ -130,7 +130,7 @@ type WriteCounter struct {
 func (wc *WriteCounter) Write(p []byte) (int, error) {
 	n := len(p)
 	wc.Total += uint64(n)
-	fmt.Printf("\r%s", strings.Repeat(" ", 35))
+	fmt.Printf("\r%s", strings.Repeat(" ", 135))
 	fmt.Printf("\rDownloading... %d of %d complete", wc.Total, wc.ExpectedSize)
 	return n, nil
 }
