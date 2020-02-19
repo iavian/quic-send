@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/cheggaaa/pb/v3"
 	"github.com/lucas-clemente/quic-go"
 )
 
@@ -106,8 +107,9 @@ func (h *StreamHandler) handlerUpload() error {
 	if err != nil {
 		return fmt.Errorf("creat file error: %v", err)
 	}
-
-	writen, err := io.Copy(tmpAbsPath, h.Reader)
+	bar := pb.Full.Start64(dataLen)
+	barReader := bar.NewProxyReader(h.reader)
+	writen, err := io.Copy(tmpAbsPath, barReader)
 	if err != nil {
 		return fmt.Errorf("write file error: %v", err)
 	}
