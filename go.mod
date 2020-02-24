@@ -10,6 +10,6 @@ go 1.13
 //require github.com/lucas-clemente/quic-go v0.7.1-0.20200218105105-d08c2145a4d9 5+
 
 require (
-	github.com/lucas-clemente/quic-go v0.7.1-0.20200220092722-244e1ae8e750
+	github.com/lucas-clemente/quic-go v0.7.1-0.20200224064830-e188a6deb528
 	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d // indirect
 )
