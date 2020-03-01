@@ -13,4 +13,4 @@ go 1.13
 //github.com/lucas-clemente/quic-go v0.7.1-0.20200220092450-88fc6b9a8714 - 5+
 //require github.com/lucas-clemente/quic-go v0.7.1-0.20200218105105-d08c2145a4d9 5+
 
-require github.com/lucas-clemente/quic-go v0.7.1-0.20200301065733-56211cf0b903
+require github.com/lucas-clemente/quic-go v0.7.1-0.20200224065639-212bfed0d234
