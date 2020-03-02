@@ -15,9 +15,6 @@ go 1.13
 //github.com/lucas-clemente/quic-go v0.7.1-0.20200220092450-88fc6b9a8714 - 5+
 //require github.com/lucas-clemente/quic-go v0.7.1-0.20200218105105-d08c2145a4d9 5+
 
-require (
-	github.com/lucas-clemente/quic-go v0.15.1
-	github.com/marten-seemann/chacha20 v0.2.0 // indirect
-)
-
 //replace github.com/lucas-clemente/quic-go => /Users/iavian/Desktop/quic-go
+
+require github.com/lucas-clemente/quic-go v0.7.1-0.20200220092722-244e1ae8e750
