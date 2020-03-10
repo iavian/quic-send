@@ -51,12 +51,13 @@ func (c *FileClient) Upload(file string) error {
 	}
 	defer stream.Close()
 
-	//writer := bufio.NewWriterSize(stream, 10000)
-	writer := bufio.NewWriter(stream)
+	writer := bufio.NewWriterSize(stream, 10000)
+	//writer := bufio.NewWriter(stream)
 	err = writer.WriteByte(byte(1))
 	if err != nil {
 		return fmt.Errorf("write op error: %v", err)
 	}
+	log.Printf("Step 1")
 	pathLenBytes := make([]byte, 2, 2)
 	binary.BigEndian.PutUint16(pathLenBytes, uint16(len(file)))
 	writen, err := writer.Write(pathLenBytes)
@@ -66,6 +67,7 @@ func (c *FileClient) Upload(file string) error {
 	if writen != 2 {
 		return errors.New("path len != 2")
 	}
+	log.Printf("Step 2")
 	writen, err = writer.WriteString(file)
 	if err != nil {
 		return fmt.Errorf("write path error: %v", err)
@@ -73,6 +75,7 @@ func (c *FileClient) Upload(file string) error {
 	if writen != len(file) {
 		return fmt.Errorf("writen != path len, %d, %d", writen, len(file))
 	}
+	log.Printf("Step 3")
 	fileReader, size := ReadFile(file)
 	defer fileReader.Close()
 	dataLenBytes := make([]byte, 8, 8)
@@ -84,6 +87,7 @@ func (c *FileClient) Upload(file string) error {
 	if writen != 8 {
 		return errors.New("data len != 8")
 	}
+	log.Printf("Step 4")
 	writeFileN, err := writer.ReadFrom(fileReader)
 	if err != nil {
 		return fmt.Errorf("write data error: %v", err)
@@ -91,10 +95,12 @@ func (c *FileClient) Upload(file string) error {
 	if uint64(writeFileN) != size {
 		return errors.New("write file n != file size")
 	}
+	log.Printf("Step 5")
 	err = writer.Flush()
 	if err != nil {
 		return fmt.Errorf("writer flush error: %v", err)
 	}
+	log.Printf("Step 6")
 	return nil
 }
 
