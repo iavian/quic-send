@@ -13,8 +13,8 @@ go 1.14
 //github.com/lucas-clemente/quic-go v0.7.1-0.20200220095333-73937e87539f - 2.5+
 //github.com/lucas-clemente/quic-go v0.7.1-0.20200220092722-244e1ae8e750 - 2+(best)
 //github.com/lucas-clemente/quic-go v0.7.1-0.20200220092450-88fc6b9a8714 - 5+
-//require github.com/lucas-clemente/quic-go v0.7.1-0.20200218105105-d08c2145a4d9 5+
+//github.com/lucas-clemente/quic-go v0.7.1-0.20200218105105-d08c2145a4d9 5+
 
-//replace github.com/lucas-clemente/quic-go => /Users/iavian/Desktop/quic-go
+//replace github.com/lucas-clemente/quic-go => ../quic-go
 
-require github.com/lucas-clemente/quic-go v0.14.4
+require github.com/lucas-clemente/quic-go v0.7.1-0.20200224065754-ebe3c1cca40a
