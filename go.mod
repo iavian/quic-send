@@ -7,4 +7,4 @@ go 1.14
 
 //replace github.com/lucas-clemente/quic-go => ../quic-go
 
-require github.com/lucas-clemente/quic-go v0.7.1-0.20200311042425-1f19eb0bd953 // indirect
+require github.com/lucas-clemente/quic-go v0.7.1-0.20200311042425-1f19eb0bd953
