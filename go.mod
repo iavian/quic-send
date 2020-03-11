@@ -17,4 +17,4 @@ go 1.14
 
 //replace github.com/lucas-clemente/quic-go => /Users/iavian/Desktop/quic-go
 
-require github.com/lucas-clemente/quic-go v0.15.0
+require github.com/lucas-clemente/quic-go v0.14.4
