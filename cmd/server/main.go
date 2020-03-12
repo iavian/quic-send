@@ -8,6 +8,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"io"
+	"log"
 	"math/big"
 	"net/http"
 	"os"
@@ -31,13 +32,22 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Nice %d\n", n)
 }
 
-func main() {
+func mainy() {
 	http.HandleFunc("/upload", uploadFile)
 	http3.ListenAndServeQUIC(":8080", "./certs/quic.cert", "./certs/quic.key", nil)
 }
 
-func mainy() {
+func main() {
 	quicConfig := &quic.Config{}
+	quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
+		filename := fmt.Sprintf("client_%x.qlog", connectionID)
+		f, err := os.Create(filename)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("Creating qlog file %s.\n", filename)
+		return f
+	}
 	s := server.NewFileServer(common.ServerAddr, generateTLSConfig(), quicConfig)
 	s.Run()
 }

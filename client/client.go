@@ -26,7 +26,7 @@ func NewFileClient(address string) *FileClient {
 		InsecureSkipVerify: true,
 		NextProtos:         []string{"quic-file"},
 	}
-	quicConfig := &quic.Config{KeepAlive: false}
+	quicConfig := &quic.Config{KeepAlive: true}
 	quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
 		filename := fmt.Sprintf("client_%x.qlog", connectionID)
 		f, err := os.Create(filename)
