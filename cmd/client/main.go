@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/iavian/quic-send/client"
 	"github.com/iavian/quic-send/common"
+	"github.com/lucas-clemente/quic-go"
 	"github.com/lucas-clemente/quic-go/http3"
 )
 
@@ -23,7 +25,16 @@ func main() {
 		TLSClientConfig: &tls.Config{
 			RootCAs:            pool,
 			InsecureSkipVerify: true,
-		}, DisableCompression: false,
+		}, DisableCompression: false, QuicConfig: &quic.Config{KeepAlive: true},
+	}
+	roundTripper.QuicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
+		filename := fmt.Sprintf("client_%x.qlog", connectionID)
+		f, err := os.Create(filename)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("Creating qlog file %s.\n", filename)
+		return f
 	}
 	defer roundTripper.Close()
 	hclient := &http.Client{
