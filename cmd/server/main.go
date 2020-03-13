@@ -34,9 +34,6 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	if len(os.Args) > 1 {
-		http.HandleFunc("/upload", uploadFile)
-		http3.ListenAndServeQUIC(":8080", "./certs/quic.cert", "./certs/quic.key", nil)
-	} else {
 		quicConfig := &quic.Config{}
 		quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
 			filename := fmt.Sprintf("client_%x.qlog", connectionID)
@@ -49,6 +46,9 @@ func main() {
 		}
 		s := server.NewFileServer(common.ServerAddr, generateTLSConfig(), quicConfig)
 		s.Run()
+	} else {
+		http.HandleFunc("/upload", uploadFile)
+		http3.ListenAndServeQUIC(":8080", "./certs/quic.cert", "./certs/quic.key", nil)
 	}
 }
 
