@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
@@ -17,55 +18,58 @@ import (
 )
 
 func main() {
-	pool, err := x509.SystemCertPool()
-	if err != nil {
-		log.Fatal(err)
-	}
-	roundTripper := &http3.RoundTripper{
-		TLSClientConfig: &tls.Config{
-			RootCAs:            pool,
-			InsecureSkipVerify: true,
-		}, DisableCompression: false, QuicConfig: &quic.Config{KeepAlive: true},
-	}
-	roundTripper.QuicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
-		filename := fmt.Sprintf("client_%x.qlog", connectionID)
-		f, err := os.Create(filename)
+	if len(os.Args) > 1 {
+		start := time.Now()
+		c := client.NewFileClient(common.ClientServerAddr)
+		file := "tfile"
+		err := c.Upload(file)
+		elapsed := time.Since(start)
+		if err != nil {
+			log.Printf("upload/download file error: %v\n", err)
+		} else {
+			log.Printf("upload/download file success: %s %s\n", file, elapsed)
+		}
+		c.Close()
+	} else {
+		pool, err := x509.SystemCertPool()
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("Creating qlog file %s.\n", filename)
-		return f
+		roundTripper := &http3.RoundTripper{
+			TLSClientConfig: &tls.Config{
+				RootCAs:            pool,
+				InsecureSkipVerify: true,
+			}, DisableCompression: false, QuicConfig: &quic.Config{KeepAlive: true},
+		}
+		roundTripper.QuicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
+			filename := fmt.Sprintf("client_%x.qlog", connectionID)
+			f, err := os.Create(filename)
+			if err != nil {
+				log.Fatal(err)
+			}
+			log.Printf("Creating qlog file %s.\n", filename)
+			return struct {
+				io.Writer
+				io.Closer
+			}{bufio.NewWriter(f), f}
+		}
+		defer roundTripper.Close()
+		hclient := &http.Client{
+			Transport: roundTripper,
+		}
+		start := time.Now()
+		file, err := os.Open("tfile")
+		if err != nil {
+			panic(err)
+		}
+		res, err := hclient.Post("https://quic.iavian.net:8080/upload", "binary/octet-stream", file)
+		elapsed := time.Since(start)
+		if err != nil {
+			panic(err)
+		} else {
+			log.Printf("upload/download file success: %s %s\n", file.Name(), elapsed)
+		}
+		defer res.Body.Close()
+		fmt.Println("All done")
 	}
-	defer roundTripper.Close()
-	hclient := &http.Client{
-		Transport: roundTripper,
-	}
-	start := time.Now()
-	file, err := os.Open("tfile")
-	if err != nil {
-		panic(err)
-	}
-	res, err := hclient.Post("https://quic.iavian.net:8080/upload", "binary/octet-stream", file)
-	elapsed := time.Since(start)
-	if err != nil {
-		panic(err)
-	} else {
-		log.Printf("upload/download file success: %s %s\n", file.Name(), elapsed)
-	}
-	defer res.Body.Close()
-	fmt.Println("All done")
-}
-
-func mainy() {
-	start := time.Now()
-	c := client.NewFileClient(common.ClientServerAddr)
-	file := "tfile"
-	err := c.Upload(file)
-	elapsed := time.Since(start)
-	if err != nil {
-		log.Printf("upload/download file error: %v\n", err)
-	} else {
-		log.Printf("upload/download file success: %s %s\n", file, elapsed)
-	}
-	c.Close()
 }

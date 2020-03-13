@@ -33,23 +33,23 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/upload", uploadFile)
-	http3.ListenAndServeQUIC(":8080", "./certs/quic.cert", "./certs/quic.key", nil)
-}
-
-func mainy() {
-	quicConfig := &quic.Config{}
-	quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
-		filename := fmt.Sprintf("client_%x.qlog", connectionID)
-		f, err := os.Create(filename)
-		if err != nil {
-			log.Fatal(err)
+	if len(os.Args) > 1 {
+		http.HandleFunc("/upload", uploadFile)
+		http3.ListenAndServeQUIC(":8080", "./certs/quic.cert", "./certs/quic.key", nil)
+	} else {
+		quicConfig := &quic.Config{}
+		quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
+			filename := fmt.Sprintf("client_%x.qlog", connectionID)
+			f, err := os.Create(filename)
+			if err != nil {
+				log.Fatal(err)
+			}
+			log.Printf("Creating qlog file %s.\n", filename)
+			return f
 		}
-		log.Printf("Creating qlog file %s.\n", filename)
-		return f
+		s := server.NewFileServer(common.ServerAddr, generateTLSConfig(), quicConfig)
+		s.Run()
 	}
-	s := server.NewFileServer(common.ServerAddr, generateTLSConfig(), quicConfig)
-	s.Run()
 }
 
 func generateTLSConfig() *tls.Config {
