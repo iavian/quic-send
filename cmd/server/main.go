@@ -9,6 +9,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"math/big"
 	"os"
@@ -43,13 +44,12 @@ func main() {
 	}
 	log.Printf("Stream Accepted")
 
-	longBuf := make([]byte, 64)
-	_, err = io.ReadFull(stream, longBuf)
+	data, err := ioutil.ReadAll(stream)
 	if err != nil {
 		panic(err)
 	}
 	stream.Close()
-	log.Printf("accept session error: %v\n", longBuf)
+	log.Printf("accept session error: %v\n", data)
 }
 
 func generateTLSConfig() *tls.Config {

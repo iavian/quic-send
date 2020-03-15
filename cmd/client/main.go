@@ -47,4 +47,5 @@ func main() {
 		panic(err)
 	}
 
+	stream.Close()
 }
