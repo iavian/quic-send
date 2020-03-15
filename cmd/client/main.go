@@ -11,6 +11,7 @@ import (
 func main() {
 	start := time.Now()
 	c := client.NewFileClient(common.ClientServerAddr)
+	defer c.Close()
 	file := "tfile"
 	err := c.Upload(file)
 	elapsed := time.Since(start)
@@ -19,5 +20,5 @@ func main() {
 	} else {
 		log.Printf("upload/download file success: %s %s\n", file, elapsed)
 	}
-	c.Close()
+
 }

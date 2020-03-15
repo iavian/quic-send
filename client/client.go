@@ -40,7 +40,7 @@ func NewFileClient(address string) *FileClient {
 func (c *FileClient) Close() {
 	time.Sleep(time.Second)
 	c.Session.CloseWithError(0, "Nice")
-	time.Sleep(time.Second)
+	//time.Sleep(time.Second)
 }
 
 func (c *FileClient) Upload(file string) error {
