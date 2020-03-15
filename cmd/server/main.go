@@ -21,6 +21,7 @@ import (
 
 func main() {
 	if len(os.Args) > 1 {
+		log.Printf("Listening on port %s for QUIC\n", common.ServerAddr)
 		quicConfig := &quic.Config{}
 		quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
 			filename := fmt.Sprintf("client_%x.qlog", connectionID)
@@ -34,6 +35,7 @@ func main() {
 		s := server.NewFileServer(common.ServerAddr, generateTLSConfig(), quicConfig)
 		s.Run()
 	} else {
+		log.Printf("Listening on port %s for http3\n", common.ServerAddr)
 		http.HandleFunc("/upload", uploadFile)
 		http3.ListenAndServeQUIC(":8080", "./certs/quic.cert", "./certs/quic.key", nil)
 	}
