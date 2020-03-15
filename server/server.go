@@ -41,7 +41,7 @@ func (s *FileServer) Run() error {
 	for {
 		sess, err := s.Listener.Accept(s.Ctx)
 		if err != nil {
-			log.Printf("accept session error: %v\n", err)
+			log.Printf("accept session error: %v %v\n", err, sess)
 			continue
 		}
 
