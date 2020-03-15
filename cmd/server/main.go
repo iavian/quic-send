@@ -21,7 +21,7 @@ func main() {
 
 	quicConfig := &quic.Config{}
 	quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
-		filename := fmt.Sprintf("client_%x.qlog", connectionID)
+		filename := fmt.Sprintf("server_%x.qlog", connectionID)
 		f, err := os.Create(filename)
 		if err != nil {
 			log.Fatal(err)
@@ -42,6 +42,8 @@ func main() {
 		panic(err)
 	}
 	_, err = io.Copy(os.Stdout, stream)
+
+	stream.Close()
 }
 
 func generateTLSConfig() *tls.Config {
