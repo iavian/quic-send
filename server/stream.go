@@ -15,6 +15,7 @@ import (
 	"github.com/lucas-clemente/quic-go"
 )
 
+//StreamHandler ..
 type StreamHandler struct {
 	Ctx    context.Context
 	Stream quic.Stream
@@ -22,6 +23,7 @@ type StreamHandler struct {
 	Writer io.Writer
 }
 
+//NewStreamHandler ..
 func NewStreamHandler(stream *quic.Stream) *StreamHandler {
 	return &StreamHandler{
 		Stream: *stream,
@@ -31,6 +33,7 @@ func NewStreamHandler(stream *quic.Stream) *StreamHandler {
 	}
 }
 
+//Run ..
 func (h *StreamHandler) Run() {
 	defer h.Stream.Close()
 	tmp := make([]byte, 1, 1)
@@ -120,6 +123,7 @@ func (h *StreamHandler) handlerUpload() error {
 	return nil
 }
 
+//WriteCounter ..
 type WriteCounter struct {
 	Total        uint64
 	ExpectedSize uint64

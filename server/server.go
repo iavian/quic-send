@@ -10,6 +10,7 @@ import (
 	"github.com/lucas-clemente/quic-go"
 )
 
+//FileServer ..
 type FileServer struct {
 	Address    string
 	TLSConfig  *tls.Config
@@ -19,6 +20,7 @@ type FileServer struct {
 	Ctx        context.Context
 }
 
+//NewFileServer ..
 func NewFileServer(address string, tlsConfig *tls.Config, quicConfig *quic.Config) *FileServer {
 	return &FileServer{
 		Address:    address,
@@ -29,6 +31,7 @@ func NewFileServer(address string, tlsConfig *tls.Config, quicConfig *quic.Confi
 	}
 }
 
+//Run ..
 func (s *FileServer) Run() error {
 	var err error
 	s.Listener, err = quic.ListenAddr(s.Address, s.TLSConfig, s.QuicConfig)

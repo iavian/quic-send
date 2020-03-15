@@ -8,12 +8,14 @@ import (
 	"github.com/lucas-clemente/quic-go"
 )
 
+// SessionHandler ..
 type SessionHandler struct {
 	Ctx     context.Context
 	Session quic.Session
 	Streams map[int64]*StreamHandler
 }
 
+// NewSessionHandler ..
 func NewSessionHandler(session *quic.Session) *SessionHandler {
 	return &SessionHandler{
 		Ctx:     context.Background(),
@@ -22,6 +24,7 @@ func NewSessionHandler(session *quic.Session) *SessionHandler {
 	}
 }
 
+//Run ..
 func (h *SessionHandler) Run() {
 	for {
 		stream, err := h.Session.AcceptStream(h.Ctx)

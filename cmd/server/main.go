@@ -18,20 +18,18 @@ import (
 )
 
 func main() {
-	if len(os.Args) > 1 {
-		quicConfig := &quic.Config{}
-		quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
-			filename := fmt.Sprintf("client_%x.qlog", connectionID)
-			f, err := os.Create(filename)
-			if err != nil {
-				log.Fatal(err)
-			}
-			log.Printf("Creating qlog file %s.\n", filename)
-			return f
+	quicConfig := &quic.Config{}
+	quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
+		filename := fmt.Sprintf("client_%x.qlog", connectionID)
+		f, err := os.Create(filename)
+		if err != nil {
+			log.Fatal(err)
 		}
-		s := server.NewFileServer(common.ServerAddr, generateTLSConfig(), quicConfig)
-		s.Run()
+		log.Printf("Creating qlog file %s.\n", filename)
+		return f
 	}
+	s := server.NewFileServer(common.ServerAddr, generateTLSConfig(), quicConfig)
+	s.Run()
 }
 
 func generateTLSConfig() *tls.Config {
