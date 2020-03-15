@@ -41,9 +41,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	_, err = io.Copy(os.Stdout, stream)
-
+	longBuf := make([]byte, 64)
+	_, err = io.ReadFull(stream, longBuf)
+	if err != nil {
+		panic(err)
+	}
 	stream.Close()
+	fmt.Printf("Done reading %s\n", longBuf)
 }
 
 func generateTLSConfig() *tls.Config {
