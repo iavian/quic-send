@@ -41,13 +41,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	log.Printf("Stream Accepted")
+
 	longBuf := make([]byte, 64)
 	_, err = io.ReadFull(stream, longBuf)
 	if err != nil {
 		panic(err)
 	}
 	stream.Close()
-	fmt.Printf("Done reading %s\n", longBuf)
+	log.Printf("accept session error: %v\n", longBuf)
 }
 
 func generateTLSConfig() *tls.Config {
