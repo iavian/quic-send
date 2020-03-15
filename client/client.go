@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/iavian/quic-send/common"
 	"github.com/lucas-clemente/quic-go"
@@ -26,21 +27,7 @@ func NewFileClient(address string) *FileClient {
 		InsecureSkipVerify: true,
 		NextProtos:         []string{"quic-file"},
 	}
-	quicConfig := &quic.Config{KeepAlive: true}
-	quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
-		filename := fmt.Sprintf("client_%x.qlog", connectionID)
-		f, err := os.Create(filename)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("Creating qlog file %s.\n", filename)
-		return struct {
-			io.Writer
-			io.Closer
-		}{bufio.NewWriter(f), f}
-	}
-
-	session, err := quic.DialAddr(address, tlsConf, quicConfig)
+	session, err := quic.DialAddr(address, tlsConf, nil)
 	if err != nil {
 		log.Fatalf("connect server error: %v\n", err)
 	}
@@ -51,7 +38,9 @@ func NewFileClient(address string) *FileClient {
 }
 
 func (c *FileClient) Close() {
-	c.Session.CloseWithError(quic.ErrorCode(0), "")
+	time.Sleep(time.Second)
+	c.Session.CloseWithError(0, "Nice")
+	time.Sleep(time.Second)
 }
 
 func (c *FileClient) Upload(file string) error {
@@ -61,13 +50,11 @@ func (c *FileClient) Upload(file string) error {
 	}
 	defer stream.Close()
 
-	//writer := bufio.NewWriterSize(stream, 10000)
 	writer := bufio.NewWriter(stream)
 	err = writer.WriteByte(byte(1))
 	if err != nil {
 		return fmt.Errorf("write op error: %v", err)
 	}
-	log.Printf("Step 1")
 	pathLenBytes := make([]byte, 2, 2)
 	binary.BigEndian.PutUint16(pathLenBytes, uint16(len(file)))
 	writen, err := writer.Write(pathLenBytes)
@@ -77,7 +64,6 @@ func (c *FileClient) Upload(file string) error {
 	if writen != 2 {
 		return errors.New("path len != 2")
 	}
-	log.Printf("Step 2")
 	writen, err = writer.WriteString(file)
 	if err != nil {
 		return fmt.Errorf("write path error: %v", err)
@@ -85,7 +71,6 @@ func (c *FileClient) Upload(file string) error {
 	if writen != len(file) {
 		return fmt.Errorf("writen != path len, %d, %d", writen, len(file))
 	}
-	log.Printf("Step 3")
 	fileReader, size := ReadFile(file)
 	defer fileReader.Close()
 	dataLenBytes := make([]byte, 8, 8)
@@ -97,7 +82,6 @@ func (c *FileClient) Upload(file string) error {
 	if writen != 8 {
 		return errors.New("data len != 8")
 	}
-	log.Printf("Step 4")
 	writeFileN, err := writer.ReadFrom(fileReader)
 	if err != nil {
 		return fmt.Errorf("write data error: %v", err)
@@ -105,12 +89,10 @@ func (c *FileClient) Upload(file string) error {
 	if uint64(writeFileN) != size {
 		return errors.New("write file n != file size")
 	}
-	log.Printf("Step 5")
 	err = writer.Flush()
 	if err != nil {
 		return fmt.Errorf("writer flush error: %v", err)
 	}
-	log.Printf("Step 6")
 	return nil
 }
 

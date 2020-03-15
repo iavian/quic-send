@@ -35,7 +35,6 @@ func (s *FileServer) Run() error {
 	if err != nil {
 		log.Fatalf("listen error: %v\n", err)
 	}
-	log.Println("listening on port ", s.Address)
 	for {
 		sess, err := s.Listener.Accept(s.Ctx)
 		if err != nil {
