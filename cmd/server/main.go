@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/tls"
@@ -10,46 +11,37 @@ import (
 	"io"
 	"log"
 	"math/big"
-	"net/http"
 	"os"
 
 	"github.com/iavian/quic-send/common"
-	"github.com/iavian/quic-send/server"
 	"github.com/lucas-clemente/quic-go"
-	"github.com/lucas-clemente/quic-go/http3"
 )
 
-func uploadFile(w http.ResponseWriter, r *http.Request) {
-	file, err := os.Create("./result")
-	if err != nil {
-		panic(err)
-	}
-	n, err := io.Copy(file, r.Body)
-	if err != nil {
-		panic(err)
-	}
-	w.Write([]byte(fmt.Sprintf("%d bytes are recieved.\n", n)))
-	fmt.Printf("Nice %d\n", n)
-}
-
 func main() {
-	if len(os.Args) > 1 {
-		quicConfig := &quic.Config{}
-		quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
-			filename := fmt.Sprintf("client_%x.qlog", connectionID)
-			f, err := os.Create(filename)
-			if err != nil {
-				log.Fatal(err)
-			}
-			log.Printf("Creating qlog file %s.\n", filename)
-			return f
+
+	quicConfig := &quic.Config{}
+	quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
+		filename := fmt.Sprintf("client_%x.qlog", connectionID)
+		f, err := os.Create(filename)
+		if err != nil {
+			log.Fatal(err)
 		}
-		s := server.NewFileServer(common.ServerAddr, generateTLSConfig(), quicConfig)
-		s.Run()
-	} else {
-		http.HandleFunc("/upload", uploadFile)
-		http3.ListenAndServeQUIC(":8080", "./certs/quic.cert", "./certs/quic.key", nil)
+		log.Printf("Creating qlog file %s.\n", filename)
+		return f
 	}
+	listener, err := quic.ListenAddr(common.ServerAddr, generateTLSConfig(), quicConfig)
+	if err != nil {
+		panic(err)
+	}
+	sess, err := listener.Accept(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	stream, err := sess.AcceptStream(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	_, err = io.Copy(os.Stdout, stream)
 }
 
 func generateTLSConfig() *tls.Config {
