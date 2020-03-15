@@ -34,7 +34,10 @@ func NewFileClient(address string) *FileClient {
 			log.Fatal(err)
 		}
 		log.Printf("Creating qlog file %s.\n", filename)
-		return f
+		return struct {
+			io.Writer
+			io.Closer
+		}{bufio.NewWriter(f), f}
 	}
 
 	session, err := quic.DialAddr(address, tlsConf, quicConfig)
@@ -58,8 +61,8 @@ func (c *FileClient) Upload(file string) error {
 	}
 	defer stream.Close()
 
-	writer := bufio.NewWriterSize(stream, 10000)
-	//writer := bufio.NewWriter(stream)
+	//writer := bufio.NewWriterSize(stream, 10000)
+	writer := bufio.NewWriter(stream)
 	err = writer.WriteByte(byte(1))
 	if err != nil {
 		return fmt.Errorf("write op error: %v", err)
