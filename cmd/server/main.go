@@ -10,26 +10,33 @@ import (
 	"io"
 	"log"
 	"math/big"
+	"net/http"
 	"os"
 
 	"github.com/iavian/quic-send/common"
 	"github.com/iavian/quic-send/server"
 	"github.com/lucas-clemente/quic-go"
+	"github.com/lucas-clemente/quic-go/http3"
 )
 
 func main() {
-	quicConfig := &quic.Config{}
-	quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
-		filename := fmt.Sprintf("client_%x.qlog", connectionID)
-		f, err := os.Create(filename)
-		if err != nil {
-			log.Fatal(err)
+	if len(os.Args) > 1 {
+		quicConfig := &quic.Config{}
+		quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
+			filename := fmt.Sprintf("client_%x.qlog", connectionID)
+			f, err := os.Create(filename)
+			if err != nil {
+				log.Fatal(err)
+			}
+			log.Printf("Creating qlog file %s.\n", filename)
+			return f
 		}
-		log.Printf("Creating qlog file %s.\n", filename)
-		return f
+		s := server.NewFileServer(common.ServerAddr, generateTLSConfig(), quicConfig)
+		s.Run()
+	} else {
+		http.HandleFunc("/upload", uploadFile)
+		http3.ListenAndServeQUIC(":8080", "./certs/quic.cert", "./certs/quic.key", nil)
 	}
-	s := server.NewFileServer(common.ServerAddr, generateTLSConfig(), quicConfig)
-	s.Run()
 }
 
 func generateTLSConfig() *tls.Config {
@@ -53,4 +60,17 @@ func generateTLSConfig() *tls.Config {
 		Certificates: []tls.Certificate{tlsCert},
 		NextProtos:   []string{"quic-file"},
 	}
+}
+
+func uploadFile(w http.ResponseWriter, r *http.Request) {
+	file, err := os.Create("./result")
+	if err != nil {
+		panic(err)
+	}
+	n, err := io.Copy(file, r.Body)
+	if err != nil {
+		panic(err)
+	}
+	w.Write([]byte(fmt.Sprintf("%d bytes are recieved.\n", n)))
+	fmt.Printf("Nice %d\n", n)
 }
