@@ -44,12 +44,16 @@ func main() {
 	}
 	log.Printf("Stream Accepted")
 
-	data, err := ioutil.ReadAll(stream)
+	tmpAbsPath, err := ioutil.TempFile(".", "*")
+	defer tmpAbsPath.Close()
+
+	writen, err := io.Copy(tmpAbsPath, stream)
+
 	if err != nil {
 		panic(err)
 	}
-	stream.Close()
-	log.Printf("accept session error: %v\n", data)
+
+	log.Printf("accept session error: %v\n", writen)
 }
 
 func generateTLSConfig() *tls.Config {
