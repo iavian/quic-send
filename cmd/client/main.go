@@ -42,7 +42,7 @@ func main() {
 			}, DisableCompression: false, QuicConfig: &quic.Config{KeepAlive: true},
 		}
 		roundTripper.QuicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
-			filename := fmt.Sprintf("client_%x.qlog", connectionID)
+			filename := fmt.Sprintf("logs/client_%x.qlog", connectionID)
 			f, err := os.Create(filename)
 			if err != nil {
 				log.Fatal(err)
