@@ -1,11 +1,9 @@
 package main
 
 import (
-	"bufio"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -41,7 +39,7 @@ func main() {
 				InsecureSkipVerify: true,
 			}, DisableCompression: false, QuicConfig: &quic.Config{KeepAlive: true},
 		}
-		roundTripper.QuicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
+		/*	roundTripper.QuicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
 			filename := fmt.Sprintf("logs/client_%x.qlog", connectionID)
 			f, err := os.Create(filename)
 			if err != nil {
@@ -52,7 +50,7 @@ func main() {
 				io.Writer
 				io.Closer
 			}{bufio.NewWriter(f), f}
-		}
+		}*/
 		defer roundTripper.Close()
 		hclient := &http.Client{
 			Transport: roundTripper,

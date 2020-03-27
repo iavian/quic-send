@@ -23,7 +23,7 @@ func main() {
 	if len(os.Args) > 1 {
 		log.Printf("Listening on port %s for QUIC\n", common.ServerAddr)
 		quicConfig := &quic.Config{}
-		quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
+		/*quicConfig.GetLogWriter = func(connectionID []byte) io.WriteCloser {
 			filename := fmt.Sprintf("client_%x.qlog", connectionID)
 			f, err := os.Create(filename)
 			if err != nil {
@@ -31,7 +31,7 @@ func main() {
 			}
 			log.Printf("Creating qlog file %s.\n", filename)
 			return f
-		}
+		}*/
 		s := server.NewFileServer(common.ServerAddr, generateTLSConfig(), quicConfig)
 		s.Run()
 	} else {
