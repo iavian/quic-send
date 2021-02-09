@@ -12,4 +12,4 @@ go 1.14
 
 //require github.com/lucas-clemente/quic-go v0.15.5
 
-require github.com/lucas-clemente/quic-go v0.18.0
+require github.com/lucas-clemente/quic-go v0.19.3
